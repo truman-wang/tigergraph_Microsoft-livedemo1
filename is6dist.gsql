@@ -16,6 +16,7 @@ CREATE OR REPLACE DISTRIBUTED QUERY is6d(VERTEX<Comment> id)  SYNTAX v2 {
       P.lastName AS moderatorLastName] as result;
 }
 
+/*
 CREATE OR REPLACE DISTRIBUTED QUERY is6dr(VERTEX<Comment> id)  SYNTAX v2 {
   SumAccum<INT> @forumId;
   SumAccum<STRING> @forumTitle;
@@ -32,3 +33,4 @@ CREATE OR REPLACE DISTRIBUTED QUERY is6dr(VERTEX<Comment> id)  SYNTAX v2 {
       P.firstName AS moderatorFirstName,
       P.lastName AS moderatorLastName] as result;
 }
+*/
