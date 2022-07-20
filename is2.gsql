@@ -1,3 +1,4 @@
+USE GRAPH ldbc_snb
 CREATE OR REPLACE QUERY is2(VERTEX<Person> id) SYNTAX v2 {
   TYPEDEF TUPLE<INT messageId, STRING messageContent, INT messageCreationDate, INT originalPostId, INT originalPostAuthorId, STRING originalPostAuthorFirstName, STRING originalPostAuthorLastName> ogPostInfo;
   HeapAccum<ogPostInfo>(10, messageCreationDate DESC, messageId DESC) @@result;

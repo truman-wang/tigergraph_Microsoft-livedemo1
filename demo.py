@@ -21,7 +21,7 @@ for i in range(N):
 
 percentiles = np.percentile(times, [50, 90, 95, 99])
 print()
-print(f'{q} persontiles: ')
+print(f'{q.upper()} persontiles: ')
 print('|' + '\t|'.join(['CNT', 'P50','P90','P95','P99']) + '\t|')
 print('|' + '|'.join(['-------']*5) + '|')
 print(f'|{N}\t|' + '\t|'.join([f'{p:.2f}' for p in percentiles]) + '\t|')
