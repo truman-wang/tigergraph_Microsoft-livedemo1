@@ -1,0 +1,21 @@
+CREATE OR REPLACE QUERY is2r(VERTEX<Person> id) SYNTAX v2 {
+  TYPEDEF TUPLE<INT messageId, STRING messageContent, INT messageCreationDate, INT originalPostId, INT originalPostAuthorId, STRING originalPostAuthorFirstName, STRING originalPostAuthorLastName> ogPostInfo;
+  HeapAccum<ogPostInfo>(10, messageCreationDate DESC, messageId DESC) @@result;
+  vPerson = { id };
+  M = SELECT t
+      FROM vPerson:s-(<HAS_CREATOR)-(Comment|Post):t
+      ORDER BY t.creationDate DESC, t.id DESC
+      LIMIT 10;
+
+  tmp = SELECT p FROM M:m -(REPLY_OF>*)- Post:s -(HAS_CREATOR>)-Person:p
+    PER(m,s,p)
+    ACCUM
+      STRING content = "",
+      IF m.content != "" THEN
+        content = m.content
+      ELSE
+        content = s.imageFile
+      END,
+      @@result += ogPostInfo(m.id, content, m.creationDate, s.id, p.id, p.firstName, p.lastName);
+  PRINT @@result as result;
+}

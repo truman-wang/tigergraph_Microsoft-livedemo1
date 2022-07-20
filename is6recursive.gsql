@@ -1,0 +1,17 @@
+USE GRAPH ldbc_snb
+CREATE OR REPLACE QUERY is6r(VERTEX<Comment> id)  SYNTAX v2 {
+  SumAccum<INT> @forumId;
+  SumAccum<STRING> @forumTitle;
+
+  M = {id};
+  F = SELECT f FROM M -(REPLY_OF>*)-Post-(<CONTAINER_OF)- Forum:f;
+  P = SELECT p FROM F:f -(HAS_MODERATOR>)- Person:p
+      ACCUM p.@forumId = f.id, p.@forumTitle = f.title;
+
+  PRINT P[
+      P.@forumId AS forumId,
+      P.@forumTitle AS forumTitle,
+      P.id AS moderatorId,
+      P.firstName AS moderatorFirstName,
+      P.lastName AS moderatorLastName] as result;
+}
