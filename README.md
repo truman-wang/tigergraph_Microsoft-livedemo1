@@ -1,4 +1,7 @@
 # TigerGraph demo on a cluster
+Slide
+https://docs.google.com/presentation/d/19mgHglhpRXOaefibprstugfNKlGuwbp_6b9TLS6sCN4/edit?usp=sharing
+
 ## Introduction
 TigerGraph has two modes:
 1. Non-distributed mode: the data is gethered at the local node. This mode targets for transaction workload (low latency for small query). 
