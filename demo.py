@@ -4,24 +4,38 @@ import time
 import numpy as np
 from random import randrange
 import sys
-
-
+from multiprocessing import Pool
+from random import shuffle
 q = sys.argv[1]
 ids = open(sys.argv[2]).readlines()
-N = 500
-times = []
-for i in range(N):
-  vid = ids[randrange(len(ids))].strip()
+N = 1000
+thread = 24
+
+vid = [int(id.strip()) for id in ids]
+shuffle(vid)
+vid = vid[:N]
+
+# print an example results
+response = requests.get(f'http://127.0.0.1:9000/query/ldbc_snb/{q}', params={"id":vid[0]}).json()
+print(response)
+
+def test(vid):
   t0 = time.time()
   response = requests.get(f'http://127.0.0.1:9000/query/ldbc_snb/{q}', params={"id":vid}).json()
-  times.append((time.time() - t0)*1000)
+  return (time.time() - t0)*1000
+  
 
-  if (i+1) % 100 == 0:
-    print(i+1, response)
+t0 = time.time()
+with Pool(processes=thread) as pool:
+  times = pool.map(test, vid)
+tot_time = time.time() - t0
+times = np.array(times)
+percentiles = np.percentile(times, [50, 90, 95, 99]).tolist()
+results = [N, thread] + percentiles + [np.average(times), N/tot_time]
 
-percentiles = np.percentile(times, [50, 90, 95, 99])
+
 print()
 print(f'{q.upper()} persontiles: ')
-print('|' + '\t|'.join(['CNT', 'P50','P90','P95','P99']) + '\t|')
-print('|' + '|'.join(['-------']*5) + '|')
-print(f'|{N}\t|' + '\t|'.join([f'{p:.2f}' for p in percentiles]) + '\t|')
+print('|' + '\t|'.join(['CNT', 'THEAD', 'P50','P90','P95','P99','AVG','QPS']) + '\t|')
+print('|' + '|'.join(['-------']*8) + '|')
+print('|' + '\t|'.join([f'{p:.0f}' for p in results]) + '\t|')
