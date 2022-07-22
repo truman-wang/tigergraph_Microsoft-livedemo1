@@ -8,8 +8,9 @@ from multiprocessing import Pool
 from random import shuffle
 q = sys.argv[1]
 ids = open(sys.argv[2]).readlines()
-N = 1000
-thread = 24
+
+thread = 1
+N = 500*thread
 
 vid = [int(id.strip()) for id in ids]
 shuffle(vid)
