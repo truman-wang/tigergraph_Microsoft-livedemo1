@@ -9,7 +9,7 @@ from random import shuffle
 q = sys.argv[1]
 ids = open(sys.argv[2]).readlines()
 
-thread = 1
+thread = 96
 N = 500*thread
 
 vid = [int(id.strip()) for id in ids]
