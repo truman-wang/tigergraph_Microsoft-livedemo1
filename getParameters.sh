@@ -1,5 +1,5 @@
 rm commentId.csv personId.csv
-root=/home/tigergraph/sf1*/initial_snapshot/dynamic
+root=/home/tigergraph/sf*/initial_snapshot/dynamic
 n1=`ls ${root}/Comment/*.csv | wc -l`
 n2=`ls ${root}/Person/*.csv | wc -l`
 
