@@ -4,25 +4,42 @@ import time
 import numpy as np
 from random import randrange
 import sys
-from multiprocessing import Pool
+from multiprocessing import Pool, current_process
 from random import shuffle
+import os
+from glob import glob
 q = sys.argv[1]
-ids = open(sys.argv[2]).readlines()
+thread = int(sys.argv[2])
 
-thread = 96
-N = 500*thread
+if q == 'is2':
+  param = 'personId.csv'
+elif q == 'is6':
+  param = 'commentId.csv'
+else:
+  exit
 
+ids = open(param).readlines()
+N = 1000*thread
 vid = [int(id.strip()) for id in ids]
 shuffle(vid)
 vid = vid[:N]
 
 # print an example results
-response = requests.get(f'http://127.0.0.1:9000/query/ldbc_snb/{q}', params={"id":vid[0]}).json()
-print(response)
+# response = requests.get(f'http://127.0.0.1:9000/query/ldbc_snb/{q}', params={"id":vid[0]}).json()
+# print(response)
+
+for fn in glob('ForkPool*.csv'):
+  try:
+    os.remove(fn)
+  except OSError:
+    pass
 
 def test(vid):
   t0 = time.time()
+  n = current_process().name
   response = requests.get(f'http://127.0.0.1:9000/query/ldbc_snb/{q}', params={"id":vid}).json()
+  with open(f'{n}.csv', 'a') as f:
+    f.write(str(response)+'\n')
   return (time.time() - t0)*1000
   
 

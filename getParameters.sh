@@ -1,4 +1,16 @@
-head -10001 /home/tigergraph/sf1000/initial_snapshot/dynamic/Comment/part-00000-4afce684-82c0-4234-b6f6-aa2c132c2627-c000.csv | awk 'BEGIN { FS = "|" } ; NR!=1 { print $2 }' > commentId.csv
+rm commentId.csv personId.csv
+root=/home/tigergraph/sf1*/initial_snapshot/dynamic
+n1=`ls ${root}/Comment/*.csv | wc -l`
+n2=`ls ${root}/Person/*.csv | wc -l`
+
+for f in $root/Comment/*.csv; do 
+  head -$((100000/n1+1)) $f \
+      | awk 'BEGIN { FS = "|" } ; NR!=1 { print $2 }' >> commentId.csv
+done
 wc -l commentId.csv
-head -10001 /home/tigergraph/sf1000/initial_snapshot/dynamic/Person/part-00000-aece135f-b6fb-4f79-8f48-ddb14530c224-c000.csv | awk 'BEGIN { FS = "|" } ; NR!=1 { print $2 }' > personId.csv
+
+for f in $root/Person/*.csv; do
+  head -$((100000/n2+1)) $f \
+      | awk 'BEGIN { FS = "|" } ; NR!=1 { print $2 }' >> personId.csv
+done
 wc -l personId.csv
