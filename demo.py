@@ -22,8 +22,7 @@ ids = open(param).readlines()
 N = 1000*thread
 vid = [int(id.strip()) for id in ids]
 shuffle(vid)
-vid = vid[:N]
-
+vid = np.array(vid[:N]).reshape((thread,-1)).tolist()
 # print an example results
 # response = requests.get(f'http://127.0.0.1:9000/query/ldbc_snb/{q}', params={"id":vid[0]}).json()
 # print(response)
@@ -34,20 +33,23 @@ for fn in glob('ForkPool*.csv'):
   except OSError:
     pass
 
-def test(vid):
-  t0 = time.time()
+def test(vids):
   n = current_process().name
-  response = requests.get(f'http://127.0.0.1:9000/query/ldbc_snb/{q}', params={"id":vid}).json()
-  with open(f'{n}.csv', 'a') as f:
-    f.write(str(response)+'\n')
-  return (time.time() - t0)*1000
-  
+  s = requests.Session()
+  times = []
+  for v in vids:
+    t0 = time.time()
+    r = s.get(f'http://127.0.0.1:9000/query/ldbc_snb/{q}', params={"id":v})
+    with open(f'{n}.csv', 'a') as f:
+      f.write(r.text+'\n')
+    times.append((time.time() - t0)*1000)
+  return times  
 
 t0 = time.time()
 with Pool(processes=thread) as pool:
   times = pool.map(test, vid)
 tot_time = time.time() - t0
-times = np.array(times)
+times = np.array(times).flatten()
 percentiles = np.percentile(times, [50, 90, 95, 99]).tolist()
 results = [N, thread] + percentiles + [np.average(times), N/tot_time]
 
